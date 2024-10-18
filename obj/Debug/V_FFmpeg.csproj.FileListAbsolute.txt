@@ -1,0 +1,10 @@
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.csproj.AssemblyReference.cache
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.Properties.Resources.resources
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.csproj.GenerateResource.cache
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.csproj.CoreCompileInputs.cache
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\bin\Debug\V_FFmpeg.exe.config
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\bin\Debug\V_FFmpeg.exe
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\bin\Debug\V_FFmpeg.pdb
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.exe
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.pdb
+C:\Users\WAN-YEOP AN\source\repos\V_FFmpeg\obj\Debug\V_FFmpeg.MainForm.resources
