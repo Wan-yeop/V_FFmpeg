@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -23,13 +24,37 @@ namespace V_FFmpeg
             InitializeComponent();
         }
 
+        [DllImport("user32.dll")]
+        private static extern uint GetDpiForWindow(IntPtr hWnd);
+
+        public static uint Get_dpiX(Form form)
+        {
+            IntPtr hWnd = form.Handle;  // 현재 윈도우 핸들
+            return GetDpiForWindow(hWnd);
+        }
+
+
+        public static float GetScalingFactor()
+        {
+            using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+            {
+                float dpiX = g.DpiX; ;
+                float scalingFactor = dpiX / 96.0f;
+                return scalingFactor;
+            }
+        }
+
+
+
+        // Start !! button
+
         private void btnStart_Click(object sender, EventArgs e)
         {
 
             if (childForm != null)
             {
-                childForm.Close();
-                childForm = null;
+                //childForm.Close();
+                childForm.TransparencyKey = Color.Lime;
             }
 
             if (ffmpegArguments == null)
@@ -108,9 +133,13 @@ namespace V_FFmpeg
                 btnStart.Enabled = true;
                 btnStop.Enabled = false;
 
-
                 ffmpegArguments = null;
 
+                if (childForm != null)
+                {
+                    childForm.Close();
+                    childForm = null;
+                }
             }
             catch (Exception ex)
             {
@@ -125,27 +154,46 @@ namespace V_FFmpeg
 
         private void New_Window_Click(object sender, EventArgs e)
         {
+            
+            if (childForm != null)
+            {
+                return;
+            }
+
             childForm = new Form
             {
                 Size = new Size(400, 300),
-                BackColor = Color.Red,
+                // FormBorderStyle = FormBorderStyle.None,
+                BackColor = Color.Lime,
+                // TransparencyKey = Color.Lime,
+                TopMost = true,
+                ShowInTaskbar = true,
                 StartPosition = FormStartPosition.CenterScreen,
-                Opacity = 0.7
+                Opacity = 0.6
             };
 
+            // childForm.Paint += TransparentForm_Paint;
             childForm.Move += ChildForm_MoveResize;     // + move event 
             childForm.Resize += ChildForm_MoveResize;   // + resize event
-            childForm.FormClosing += ChildForm_FormClosing;
+            // childForm.FormClosing += ChildForm_FormClosing;
 
             childForm.Show();
 
+        }
+
+        private void TransparentForm_Paint(object sender, PaintEventArgs e)
+        {
+            int borderThickness = 5;
+            Pen redPen = new Pen(Color.Red, borderThickness);   // 테두리 색상과 굵기 설정
+            Form form = sender as Form;
+            e.Graphics.DrawRectangle(redPen, borderThickness / 2, borderThickness / 2, (form.ClientSize.Width-borderThickness), (form.ClientSize.Height-borderThickness));  // 테두리 그리기
         }
 
         // 캡쳐 영역 창을 닫기 전에 위치 및 사이즈 정보 얻기 (ffmpegArguments)
         private void ChildForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // H264는  width, Height 가 2의 배수여야 한다. -vf "scale="
-            Rectangle Rect = new Rectangle(childForm.Left+10, childForm.Top+10, (int)(Math.Truncate(childForm.Width/2.0)*2), (int)(Math.Truncate(childForm.Height/2.0)*2) );
+            Rectangle Rect = new Rectangle(childForm.Left, childForm.Top, (int)(Math.Truncate(childForm.Width/2.0)*2), (int)(Math.Truncate(childForm.Height/2.0)*2) );
 
             ffmpegArguments = $"-y -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height} -i desktop -vcodec libx264 -pix_fmt yuv420p output.mp4";
         }
@@ -158,14 +206,21 @@ namespace V_FFmpeg
                 childForm.Left = 0;  // 창 Left 값이 0 이하가 되지 않도록
             }
 
+            Rectangle Rect = new Rectangle((childForm.Left+10), (childForm.Top+60), (int)(Math.Truncate((childForm.Width-20) / 2.0) * 2), (int)(Math.Truncate((childForm.Height-70) / 2.0) * 2));
+            ffmpegArguments = $"-y -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height} -i desktop -vcodec libx264 -pix_fmt yuv420p output.mp4";
+
             String xy;
 
-            xy = " X:" + (childForm.Left+10).ToString()
-                + "_Y:" + (childForm.Top+10).ToString()
-                + " W:" + childForm.Width.ToString()
-                + "_H:" + childForm.Height.ToString();
-
+            xy = " X:" + Rect.Left.ToString() + "_Y:" + Rect.Top.ToString() + " W:" + Rect.Width.ToString() + "_H:" + Rect.Height.ToString();
             childForm.Text = xy;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            float dpiX = GetScalingFactor();
+
+            MessageBox.Show(String.Format("{0:F2}", dpiX));
+
         }
     }
 }
