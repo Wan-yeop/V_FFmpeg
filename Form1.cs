@@ -155,10 +155,6 @@ namespace V_FFmpeg
         private void New_Window_Click(object sender, EventArgs e)
         {
             
-            if (childForm != null)
-            {
-                return;
-            }
 
             childForm = new Form
             {
@@ -175,7 +171,7 @@ namespace V_FFmpeg
             // childForm.Paint += TransparentForm_Paint;
             childForm.Move += ChildForm_MoveResize;     // + move event 
             childForm.Resize += ChildForm_MoveResize;   // + resize event
-            // childForm.FormClosing += ChildForm_FormClosing;
+            //childForm.FormClosing += ChildForm_FormClosing;
 
             childForm.Show();
 
@@ -194,8 +190,8 @@ namespace V_FFmpeg
         {
             // H264는  width, Height 가 2의 배수여야 한다. -vf "scale="
             Rectangle Rect = new Rectangle(childForm.Left, childForm.Top, (int)(Math.Truncate(childForm.Width/2.0)*2), (int)(Math.Truncate(childForm.Height/2.0)*2) );
-
-            ffmpegArguments = $"-y -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height} -i desktop -vcodec libx264 -pix_fmt yuv420p output.mp4";
+            ffmpegArguments = $"-y -f dshow -i audio=\"스테레오 믹스(Realtek(R) Audio)\" -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height}"
+                + " -i desktop -vcodec libx264 -pix_fmt yuv420p  -acodec aac output.mp4";
         }
 
         // Windows Location & Size
@@ -207,7 +203,8 @@ namespace V_FFmpeg
             }
 
             Rectangle Rect = new Rectangle((childForm.Left+10), (childForm.Top+60), (int)(Math.Truncate((childForm.Width-20) / 2.0) * 2), (int)(Math.Truncate((childForm.Height-70) / 2.0) * 2));
-            ffmpegArguments = $"-y -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height} -i desktop -vcodec libx264 -pix_fmt yuv420p output.mp4";
+            ffmpegArguments = $"-y -f dshow -i audio=\"스테레오 믹스(Realtek(R) Audio)\" -f gdigrab -framerate 30 -offset_x {Rect.Left} -offset_y {Rect.Top} -video_size {Rect.Width}x{Rect.Height} "
+                + "-i desktop -vcodec libx264 -pix_fmt yuv420p -acodec aac output.mp4";
 
             String xy;
 
